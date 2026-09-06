@@ -1,0 +1,545 @@
+import type { Category, Product } from "./types";
+
+export const categories: Category[] = [
+  {
+    slug: "electronics",
+    name: "Electronics",
+    emoji: "📱",
+    gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    description: "Mobiles, speakers, smart devices aur zyada",
+  },
+  {
+    slug: "ladies-boutique",
+    name: "Ladies Boutique",
+    emoji: "👗",
+    gradient: "linear-gradient(135deg, #f953c6 0%, #b91d73 100%)",
+    description: "Stylish boutique collection for ladies",
+  },
+  {
+    slug: "winter-clothing",
+    name: "Winter Clothing",
+    emoji: "🧥",
+    gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+    description: "Warm jackets, hoodies aur woollens",
+  },
+  {
+    slug: "summer-clothing",
+    name: "Summer Clothing",
+    emoji: "👕",
+    gradient: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
+    description: "Light, comfortable summer wears",
+  },
+  {
+    slug: "cosmetics",
+    name: "Cosmetics",
+    emoji: "💄",
+    gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    description: "Makeup aur skincare essentials",
+  },
+  {
+    slug: "laptop-accessories",
+    name: "Laptop Accessories",
+    emoji: "💻",
+    gradient: "linear-gradient(135deg, #141e30 0%, #243b55 100%)",
+    description: "Everything for your laptop setup",
+  },
+];
+
+export const products: Product[] = [
+  // Electronics
+  {
+    id: "el-1",
+    slug: "wireless-bluetooth-earbuds",
+    name: "Wireless Bluetooth Earbuds",
+    category: "electronics",
+    price: 2499,
+    originalPrice: 3999,
+    emoji: "🎧",
+    gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    imageUrl: "/bluetooth.png", 
+    description:
+      "Crystal-clear sound ke saath premium wireless earbuds. Active noise cancellation, long battery life aur Bluetooth 5.3 support.",
+    rating: 4.6,
+    reviews: 214,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "el-2",
+    slug: "smart-watch-ultra",
+    name: "Smart Watch Ultra",
+    category: "electronics",
+    price: 5499,
+    originalPrice: 7999,
+    emoji: "⌚",
+    gradient: "linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%)",
+    description:
+      "Health tracking, call alerts aur fitness features ke saath full-featured smart watch. IP68 water resistant.",
+    rating: 4.4,
+    reviews: 168,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "el-3",
+    slug: "bluetooth-speaker-360",
+    name: "360 Bluetooth Speaker",
+    category: "electronics",
+    price: 3299,
+    originalPrice: 4500,
+    emoji: "🔊",
+    gradient: "linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%)",
+    description:
+      "Powerful 360-degree sound with deep bass. 12-hour playtime aur built-in mic ke saath.",
+    rating: 4.3,
+    reviews: 96,
+    inStock: true,
+  },
+  {
+    id: "el-4",
+    slug: "portable-power-bank-20000mah",
+    name: "20000mAh Power Bank",
+    category: "electronics",
+    price: 2899,
+    originalPrice: 3499,
+    emoji: "🔋",
+    gradient: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+    description:
+      "Fast charging ke liye 22.5W output wala power bank. Dual USB + Type-C ports.",
+    rating: 4.5,
+    reviews: 301,
+    inStock: true,
+  },
+  {
+    id: "el-5",
+    slug: "gaming-keyboard-rgb",
+    name: "RGB Gaming Keyboard",
+    category: "electronics",
+    price: 3999,
+    emoji: "⌨️",
+    gradient: "linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%)",
+    description:
+      "Mechanical-feel RGB keyboard with 104 keys. Anti-ghosting aur detachable cable.",
+    rating: 4.7,
+    reviews: 142,
+    inStock: true,
+    tag: "New",
+  },
+
+  // Ladies Boutique
+  {
+    id: "lb-1",
+    slug: "floral-print-maxi-dress",
+    name: "Floral Print Maxi Dress",
+    category: "ladies-boutique",
+    price: 3299,
+    originalPrice: 4599,
+    emoji: "👗",
+    gradient: "linear-gradient(135deg, #f953c6 0%, #b91d73 100%)",
+    description:
+      "Elegant floral print maxi dress. Lightweight fabric, perfect for evening gatherings aur parties.",
+    rating: 4.5,
+    reviews: 189,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "lb-2",
+    slug: "embroidered-kurti",
+    name: "Embroidered Kurti Set",
+    category: "ladies-boutique",
+    price: 2799,
+    originalPrice: 3800,
+    emoji: "🥻",
+    gradient: "linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)",
+    description:
+      "Beautiful embroidered kurti with dupatta. Premium quality fabric, soft aur comfortable.",
+    rating: 4.6,
+    reviews: 254,
+    inStock: true,
+  },
+  {
+    id: "lb-3",
+    slug: "premium-dupatta-shawl",
+    name: "Premium Embroidered Shawl",
+    category: "ladies-boutique",
+    price: 1999,
+    originalPrice: 2999,
+    emoji: "🧣",
+    gradient: "linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)",
+    description:
+      "Luxurious soft shawl with delicate embroidery. Warm, light aur stylish.",
+    rating: 4.4,
+    reviews: 87,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "lb-4",
+    slug: "casual-cotton-frock",
+    name: "Casual Cotton Frock",
+    category: "ladies-boutique",
+    price: 2199,
+    emoji: "👚",
+    gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+    description:
+      "Daily wear ke liye comfy cotton frock. Breathable fabric, light aur easy to carry.",
+    rating: 4.2,
+    reviews: 64,
+    inStock: true,
+  },
+  {
+    id: "lb-5",
+    slug: "designer-footwear",
+    name: "Designer Ladies Sandals",
+    category: "ladies-boutique",
+    price: 2499,
+    originalPrice: 3200,
+    emoji: "👠",
+    gradient: "linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)",
+    description:
+      "Trendy designer sandals. Soft sole, perfect sizing aur premium finishing.",
+    rating: 4.3,
+    reviews: 118,
+    inStock: true,
+  },
+
+  // Winter Clothing
+  {
+    id: "wc-1",
+    slug: "puffer-jacket-men",
+    name: "Puffer Jacket (Men)",
+    category: "winter-clothing",
+    price: 4999,
+    originalPrice: 6500,
+    emoji: "🧥",
+    gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+    description:
+      "Extra warm padded puffer jacket. Water-resistant shell, ideal for extreme winters.",
+    rating: 4.6,
+    reviews: 173,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "wc-2",
+    slug: "fleece-hoodie",
+    name: "Premium Fleece Hoodie",
+    category: "winter-clothing",
+    price: 2899,
+    originalPrice: 3600,
+    emoji: "🧶",
+    gradient: "linear-gradient(135deg, #3e5151 0%, #decba4 100%)",
+    description:
+      "Super soft fleece-lined hoodie. Wrinkle-proof fabric, oversized fit.",
+    rating: 4.5,
+    reviews: 231,
+    inStock: true,
+  },
+  {
+    id: "wc-3",
+    slug: "woolen-sweater-unisex",
+    name: "Woolen Knit Sweater",
+    category: "winter-clothing",
+    price: 2599,
+    emoji: "🧶",
+    gradient: "linear-gradient(135deg, #2c3e50 0%, #bdc3c7 100%)",
+    description:
+      "Classic woolen knit sweater, unisex design. Ultra warm aur stylish.",
+    rating: 4.4,
+    reviews: 152,
+    inStock: true,
+    tag: "New",
+  },
+  {
+    id: "wc-4",
+    slug: "thermal-underwear-set",
+    name: "Thermal Innerwear Set",
+    category: "winter-clothing",
+    price: 1899,
+    originalPrice: 2500,
+    emoji: "🧦",
+    gradient: "linear-gradient(135deg, #4568dc 0%, #b06ab3 100%)",
+    description:
+      "Body-warming thermal set (top + bottom). Moisture-wicking fabric.",
+    rating: 4.3,
+    reviews: 198,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "wc-5",
+    slug: "winter-beanie-gloves",
+    name: "Winter Beanie & Gloves",
+    category: "winter-clothing",
+    price: 1499,
+    emoji: "🧤",
+    gradient: "linear-gradient(135deg, #000428 0%, #004e92 100%)",
+    description:
+      "Cozy knitted beanie + touch-screen gloves combo. Perfect winter accessories.",
+    rating: 4.5,
+    reviews: 76,
+    inStock: true,
+  },
+
+  // Summer Clothing
+  {
+    id: "sc-1",
+    slug: "cotton-t-shirt-pack",
+    name: "Premium Cotton T-Shirts (Pack of 3)",
+    category: "summer-clothing",
+    price: 1999,
+    originalPrice: 2700,
+    emoji: "👕",
+    gradient: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
+    description:
+      "Breathable 100% combed cotton tees, pack of 3. Multiple colors available.",
+    rating: 4.6,
+    reviews: 342,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "sc-2",
+    slug: "linen-casual-shirt",
+    name: "Linen Casual Shirt",
+    category: "summer-clothing",
+    price: 2299,
+    originalPrice: 2900,
+    emoji: "👔",
+    gradient: "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)",
+    description:
+      "Lightweight linen shirt, perfect for hot days. Wrinkle-resistant aur breathable.",
+    rating: 4.4,
+    reviews: 129,
+    inStock: true,
+  },
+  {
+    id: "sc-3",
+    slug: "summer-shorts-denim",
+    name: "Casual Denim Shorts",
+    category: "summer-clothing",
+    price: 1799,
+    emoji: "🩳",
+    gradient: "linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%)",
+    description:
+      "Comfortable denim shorts with stretch fit. Multiple sizes available.",
+    rating: 4.3,
+    reviews: 98,
+    inStock: true,
+    tag: "New",
+  },
+  {
+    id: "sc-4",
+    slug: "sports-joggers",
+    name: "Lightweight Sports Joggers",
+    category: "summer-clothing",
+    price: 2099,
+    originalPrice: 2800,
+    emoji: "👖",
+    gradient: "linear-gradient(135deg, #c33764 0%, #1d2671 100%)",
+    description:
+      "Quick-dry sports joggers with elastic waistband. Ideal for workouts aur casual wear.",
+    rating: 4.5,
+    reviews: 187,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "sc-5",
+    slug: "sun-protection-caps",
+    name: "Sun Protection Caps",
+    category: "summer-clothing",
+    price: 999,
+    emoji: "🧢",
+    gradient: "linear-gradient(135deg, #f46b45 0%, #eea849 100%)",
+    description:
+      "Stylish caps with UV protection. Adjustable fit, lightweight fabric.",
+    rating: 4.2,
+    reviews: 54,
+    inStock: true,
+  },
+
+  // Cosmetics
+  {
+    id: "cs-1",
+    slug: "matte-lipstick-set",
+    name: "Matte Lipstick Set (6 Colors)",
+    category: "cosmetics",
+    price: 1499,
+    originalPrice: 2200,
+    emoji: "💄",
+    gradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    description:
+      "Long-lasting matte lipstick set with 6 stunning shades. Rich pigmentation.",
+    rating: 4.7,
+    reviews: 276,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "cs-2",
+    slug: "face-serum-vitamin-c",
+    name: "Vitamin C Face Serum",
+    category: "cosmetics",
+    price: 1899,
+    originalPrice: 2600,
+    emoji: "🧴",
+    gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    description:
+      "Brightening Vitamin C serum. Reduces dark spots, gives glowing skin.",
+    rating: 4.5,
+    reviews: 312,
+    inStock: true,
+  },
+  {
+    id: "cs-3",
+    slug: "eyeshadow-palette",
+    name: "Eyeshadow Palette",
+    category: "cosmetics",
+    price: 1699,
+    emoji: "🎨",
+    gradient: "linear-gradient(135deg, #c79081 0%, #dfa579 100%)",
+    description:
+      "18-shade eyeshadow palette, matte aur shimmer finish. High pigmentation.",
+    rating: 4.4,
+    reviews: 143,
+    inStock: true,
+    tag: "New",
+  },
+  {
+    id: "cs-4",
+    slug: "sunscreen-spf50",
+    name: "Sunscreen SPF 50+",
+    category: "cosmetics",
+    price: 1299,
+    originalPrice: 1800,
+    emoji: "🌞",
+    gradient: "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)",
+    description:
+      "Water-resistant sunscreen with broad spectrum protection. Non-greasy formula.",
+    rating: 4.6,
+    reviews: 198,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "cs-5",
+    slug: "makeup-brush-set",
+    name: "Makeup Brush Set (12 Pcs)",
+    category: "cosmetics",
+    price: 1599,
+    originalPrice: 2300,
+    emoji: "🪞",
+    gradient: "linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)",
+    description:
+      "Professional 12-piece brush set. Soft bristles, perfect for flawless application.",
+    rating: 4.3,
+    reviews: 121,
+    inStock: true,
+  },
+
+  // Laptop Accessories
+  {
+    id: "la-1",
+    slug: "mechanical-keyboard",
+    name: "Mechanical Keyboard 75%",
+    category: "laptop-accessories",
+    price: 7499,
+    originalPrice: 9500,
+    emoji: "⌨️",
+    gradient: "linear-gradient(135deg, #141e30 0%, #243b55 100%)",
+    description:
+      "Hot-swappable mechanical keyboard with RGB. Gasket mount aur PBT keycaps.",
+    rating: 4.7,
+    reviews: 164,
+    inStock: true,
+    tag: "Best Seller",
+  },
+  {
+    id: "la-2",
+    slug: "wireless-mouse",
+    name: "Wireless Silent Mouse",
+    category: "laptop-accessories",
+    price: 1499,
+    originalPrice: 2200,
+    emoji: "🖱️",
+    gradient: "linear-gradient(135deg, #232526 0%, #414345 100%)",
+    description:
+      "Silent click wireless mouse with adjustable DPI. Ergonomic design.",
+    rating: 4.5,
+    reviews: 287,
+    inStock: true,
+  },
+  {
+    id: "la-3",
+    slug: "laptop-stand-aluminum",
+    name: "Aluminum Laptop Stand",
+    category: "laptop-accessories",
+    price: 2199,
+    originalPrice: 2999,
+    emoji: "🖥️",
+    gradient: "linear-gradient(135deg, #757f9a 0%, #d7dde8 100%)",
+    description:
+      "Foldable aluminum laptop stand. Ergonomic angle, good for posture.",
+    rating: 4.6,
+    reviews: 209,
+    inStock: true,
+    tag: "Sale",
+  },
+  {
+    id: "la-4",
+    slug: "usb-c-hub-8in1",
+    name: "USB-C Hub 8-in-1",
+    category: "laptop-accessories",
+    price: 3499,
+    originalPrice: 4700,
+    emoji: "🔌",
+    gradient: "linear-gradient(135deg, #0f2027 0%, #2c5364 100%)",
+    description:
+      "8-in-1 USB-C hub: HDMI 4K, USB 3.0, SD/TF readers aur Power Delivery.",
+    rating: 4.4,
+    reviews: 178,
+    inStock: true,
+  },
+  {
+    id: "la-5",
+    slug: "laptop-backpack",
+    name: "Waterproof Laptop Backpack",
+    category: "laptop-accessories",
+    price: 3999,
+    originalPrice: 5200,
+    emoji: "🎒",
+    gradient: "linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%)",
+    description:
+      "Anti-theft, waterproof backpack with USB port. Fits 15.6 inch laptops.",
+    rating: 4.7,
+    reviews: 243,
+    inStock: true,
+    tag: "New",
+  },
+];
+
+export function getCategory(slug: string): Category | undefined {
+  return categories.find((c) => c.slug === slug);
+}
+
+export function getCategoryProducts(slug: string): Product[] {
+  return products.filter((p) => p.category === slug);
+}
+
+export function getProduct(slug: string): Product | undefined {
+  return products.find((p) => p.slug === slug);
+}
+
+export function getProductById(id: string): Product | undefined {
+  return products.find((p) => p.id === id);
+}
+
+export function getFeaturedProducts(): Product[] {
+  return products.filter((p) => p.tag === "Best Seller" || p.tag === "Sale");
+}
+
+export function getNewProducts(): Product[] {
+  return products.filter((p) => p.tag === "New");
+}
