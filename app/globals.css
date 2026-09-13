@@ -2307,7 +2307,74 @@ button {
   line-height: 1.5;
 }
 
+/* Manual payment (JazzCash / Easypaisa / Bank) notice */
+.manual-payment-notice {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.manual-payment-notice .online-pay-note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.manual-payment-details {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.manual-payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
+
+.manual-payment-row + .manual-payment-row {
+  border-top: 1px solid var(--gray-100);
+}
+
+.manual-payment-row span {
+  color: var(--gray-500);
+}
+
+.manual-payment-row strong {
+  color: var(--dark);
+  text-align: right;
+  word-break: break-all;
+}
+
+.manual-payment-row .mono {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 14px;
+}
+
+.manual-payment-instructions {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  line-height: 1.6;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
 /* ============ Responsive ============ */
+@media (max-width: 1100px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
 @media (max-width: 1024px) {
   .category-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -2405,11 +2472,12 @@ button {
   }
 
   .hero-emoji {
-    font-size: 100px;
+    display: none;
   }
 
   .category-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 
   .product-grid {
@@ -2453,15 +2521,93 @@ button {
   .top-bar-inner {
     justify-content: center;
   }
+
+  .section-head {
+    flex-wrap: wrap;
+  }
+
+  .order-summary {
+    padding: 20px;
+  }
+
+  .checkout-form {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+  }
+
+  /* Header compact */
+  .menu-toggle {
+    padding: 7px;
+  }
+
+  .logo-badge {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .header-actions .cart-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .search-box input {
+    font-size: 13px;
+  }
+
+  .search-submit {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Product grid — 2 columns mobile (e-commerce standard) */
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .product-image-medium {
-    height: 220px;
+    height: 150px;
+  }
+
+  .product-card-body {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .product-name {
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .product-price {
+    font-size: 15px;
+  }
+
+  .product-original-price {
+    font-size: 11px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .category-card {
+    padding: 18px 8px;
   }
 
   .section {
@@ -2473,12 +2619,152 @@ button {
     font-size: 32px;
   }
 
+  .hero-subtitle {
+    font-size: 15px;
+  }
+
+  .hero-stats {
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .hero-stats strong {
+    font-size: 20px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
   .section-title {
     font-size: 24px;
   }
 
   .footer-grid {
     grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 44px;
+  }
+
+  .page-hero {
+    padding: 40px 0;
+  }
+
+  .page-hero-title {
+    font-size: 30px;
+  }
+
+  .page-title {
+    font-size: 26px;
+  }
+
+  .product-detail {
+    gap: 24px;
+  }
+
+  .product-image-large {
+    height: 260px;
+  }
+
+  .product-detail-title {
+    font-size: 24px;
+  }
+
+  .product-detail-price .product-price {
+    font-size: 24px;
+  }
+
+  .product-detail-info .btn {
+    width: 100%;
+  }
+
+  .buy-actions-lg .btn:first-child {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .cart-item {
+    grid-template-columns: 56px 1fr auto;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .cart-item .product-image-medium {
+    height: 56px;
+  }
+
+  .cart-item .product-image-emoji {
+    font-size: 28px;
+  }
+
+  .cart-item-name {
+    font-size: 13px;
+  }
+
+  .qty-control span {
+    min-width: 20px;
+    font-size: 13px;
+  }
+
+  .qty-control button {
+    width: 26px;
+    height: 26px;
+  }
+
+  .checkout-form,
+  .order-summary,
+  .auth-card,
+  .track-form,
+  .track-result,
+  .review-form {
+    padding: 18px;
+  }
+
+  .quick-order-row {
+    grid-template-columns: 1fr;
+  }
+
+  .track-form .btn {
+    width: 100%;
+  }
+
+  .product-filters {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .filter-field {
+    flex: 1 1 100%;
+  }
+
+  .coupon-input-row .btn {
+    padding: 9px 12px;
+  }
+}
+
+/* Comfortable 2-column tiny tablets (up to 400px) — force single column */
+@media (max-width: 380px) {
+  .product-grid,
+  .category-grid,
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image-medium {
+    height: 200px;
+  }
+
+  .product-detail-price {
+    flex-wrap: wrap;
+  }
+
+  .header-actions .cart-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .search-submit {
+    display: none;
   }
 }
 
@@ -2495,7 +2781,7 @@ button {
 
 @media (max-width: 768px) {
   .header-center {
-    order: 3;
+    order: -1;
     flex: 1 1 100%;
     max-width: none;
     margin: 4px 0 8px;
@@ -2534,12 +2820,19 @@ button {
 
 @media (max-width: 480px) {
   .wishlist-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .track-timeline {
     flex-wrap: wrap;
     gap: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .wishlist-grid {
+    grid-template-columns: 1fr;
   }
 }
 

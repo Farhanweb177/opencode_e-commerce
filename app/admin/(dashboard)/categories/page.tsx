@@ -76,19 +76,22 @@ export default async function AdminCategoriesPage() {
 
       <section className="categories-admin-list">
         {categories.map((cat) => (
-          <form
+          <div
             key={cat.slug}
-            action={updateCategory}
             className="admin-card category-row"
           >
-            <input type="hidden" name="originalSlug" value={cat.slug} />
             <span
               className="category-row-swatch"
               style={{ background: cat.gradient }}
             >
               {cat.emoji}
             </span>
-            <div className="category-row-fields">
+            <form
+              action={updateCategory}
+              id={`cat-${cat.slug}`}
+              className="category-row-fields"
+            >
+              <input type="hidden" name="originalSlug" value={cat.slug} />
               <input name="name" defaultValue={cat.name} required />
               <small className="mono">/{cat.slug}</small>
               <input
@@ -113,9 +116,14 @@ export default async function AdminCategoriesPage() {
                   )}
                 </select>
               </div>
-            </div>
+            </form>
             <div className="admin-actions-cell">
-              <button type="submit" className="admin-action-btn" title="Save">
+              <button
+                type="submit"
+                form={`cat-${cat.slug}`}
+                className="admin-action-btn"
+                title="Save"
+              >
                 💾
               </button>
               <Link href={`/category/${cat.slug}`} className="admin-action-btn" title="View">
@@ -127,7 +135,7 @@ export default async function AdminCategoriesPage() {
                 confirmText={`"${cat.name}" aur iske saare products delete ho jayenge. Continue?`}
               />
             </div>
-          </form>
+          </div>
         ))}
       </section>
     </div>

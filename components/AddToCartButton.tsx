@@ -16,7 +16,7 @@ export function AddToCartButton({
   label?: string;
   large?: boolean;
 }) {
-  const { addItem } = useCart();
+  const { addItem, removeItem } = useCart();
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [browseQty, setBrowseQty] = useState(1);
@@ -58,6 +58,7 @@ export function AddToCartButton({
     ]);
     if (result.ok && result.orderNumber) {
       setPlacedOrderId(result.orderNumber);
+      removeItem(product.id);
     }
     setPlacing(false);
   }
