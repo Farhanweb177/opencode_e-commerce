@@ -20,7 +20,7 @@ export type ManualPaymentMethod = {
 
 // PayPal/Card ONLINE payment disable hai — saath hi COD available.
 export const ONLINE_DISABLED_MSG =
-  "Online card/payment gateway abhi available nahi. Paytm ka istemal — COD ya apne manual (JazzCash/Easypaisa/Bank) account number se transfer karke order karein.";
+  "Online card/payment gateway abhi available nahi. COD ya apne manual (JazzCash/Easypaisa/Bank) account number se transfer karke order karein.";
 
 export const MANUAL_PAYMENT_METHODS: ManualPaymentMethod[] = [
   {
@@ -52,9 +52,13 @@ export const MANUAL_PAYMENT_METHODS: ManualPaymentMethod[] = [
   },
 ];
 
-// Programmatically ek method dhoondo
+// Programmatically ek method dhoondo — id ("jazzcash") ya checkout par
+// use hone wala label ("JazzCash") dono accept karein.
 export function getManualPaymentMethod(
-  id: string
+  idOrLabel: string
 ): ManualPaymentMethod | undefined {
-  return MANUAL_PAYMENT_METHODS.find((m) => m.id === id);
+  const needle = idOrLabel.trim().toLowerCase();
+  return MANUAL_PAYMENT_METHODS.find(
+    (m) => m.id.toLowerCase() === needle || m.label.toLowerCase() === needle
+  );
 }

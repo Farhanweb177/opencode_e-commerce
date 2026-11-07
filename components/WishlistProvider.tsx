@@ -46,9 +46,25 @@ function persist(next: ProductSnapshot[]) {
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", handleStorageEvent);
+  }
   return () => {
     listeners.delete(listener);
+    window.removeEventListener("storage", handleStorageEvent);
   };
+}
+
+function handleStorageEvent(event: StorageEvent) {
+  if (event.key !== STORAGE_KEY) return;
+  try {
+    wishlistItems = event.newValue
+      ? (JSON.parse(event.newValue) as ProductSnapshot[])
+      : [];
+  } catch {
+    wishlistItems = [];
+  }
+  emit();
 }
 
 const EMPTY: ProductSnapshot[] = [];

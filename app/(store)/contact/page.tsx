@@ -24,7 +24,7 @@ export default function ContactPage() {
     const body = encodeURIComponent(
       `${form.message}\n\n— ${form.name} (${form.email})`
     );
-    window.location.href = `mailto:support@allinone.store?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:support@allinone.pk?subject=${subject}&body=${body}`;
     setSent(true);
   }
 
@@ -42,7 +42,7 @@ export default function ContactPage() {
             {SITE_WHATSAPP_DISPLAY}
           </a>
           <br />✉️ Email:{" "}
-          <a href="mailto:support@allinone.store">support@allinone.store</a>
+          <a href="mailto:support@allinone.pk">support@allinone.pk</a>
           <br />🕐 Timing: Mon – Sat, 9 AM to 9 PM
         </p>
 
@@ -53,7 +53,7 @@ export default function ContactPage() {
             <strong>Shukriya!</strong>
             <p>
               Aapka message email client mein khul gaya. Agar mail app nahi
-              khuli to seedha support@allinone.store par email karein.
+              khuli to seedha support@allinone.pk par email karein.
             </p>
           </div>
         ) : (

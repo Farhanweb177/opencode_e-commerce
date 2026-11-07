@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useWishlist } from "@/components/WishlistProvider";
-import { formatPrice } from "@/lib/utils";
+import { formatCategoryName, formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/AddToCartButton";
 import { ProductImage } from "@/components/ProductImage";
 import type { Product } from "@/lib/types";
@@ -39,8 +39,9 @@ export default function WishlistPage() {
             description: "",
             rating: 0,
             reviews: 0,
-            inStock: true,
+            inStock: item.inStock ?? true,
           } as Product;
+          const available = product.inStock && (product.stock ?? 1) > 0;
           return (
             <div key={item.id} className="product-card">
               <Link
@@ -50,7 +51,9 @@ export default function WishlistPage() {
                 <ProductImage product={product} />
               </Link>
               <div className="product-card-body">
-                <span className="product-category-label">{item.category}</span>
+                <span className="product-category-label">
+                  {formatCategoryName(item.category)}
+                </span>
                 <Link href={`/product/${item.slug}`} className="product-name">
                   {item.name}
                 </Link>
@@ -59,7 +62,13 @@ export default function WishlistPage() {
                     {formatPrice(item.price)}
                   </span>
                 </div>
-                <AddToCartButton product={product} />
+                {available ? (
+                  <AddToCartButton product={product} />
+                ) : (
+                  <button className="btn btn-disabled" disabled>
+                    Out of Stock
+                  </button>
+                )}
                 <button
                   type="button"
                   className="wishlist-remove"

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/utils";
+import { formatCategoryName, formatPrice } from "@/lib/utils";
 import { ProductImage } from "./ProductImage";
 import { AddToCartButton } from "./AddToCartButton";
 import { WishlistButton } from "./WishlistButton";
@@ -17,6 +17,8 @@ export function ProductCard({ product }: { product: Product }) {
     product.stock > 0 &&
     product.stock <= 5;
 
+  const available = product.inStock && (product.stock ?? 1) > 0;
+
   return (
     <div className="product-card">
       <Link href={`/product/${product.slug}`} className="product-card-media">
@@ -27,7 +29,9 @@ export function ProductCard({ product }: { product: Product }) {
       <WishlistButton product={product} position="card" />
 
       <div className="product-card-body">
-        <span className="product-category-label">{product.category}</span>
+        <span className="product-category-label">
+          {formatCategoryName(product.category)}
+        </span>
         <Link href={`/product/${product.slug}`} className="product-name">
           {product.name}
         </Link>
@@ -45,7 +49,7 @@ export function ProductCard({ product }: { product: Product }) {
             </span>
           )}
         </div>
-        {product.inStock ? (
+        {available ? (
           <>
             {lowStock && (
               <span className="low-stock-hint">

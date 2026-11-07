@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdminReady, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { TrackedOrder } from "@/lib/types";
 
 export type ReviewResult = {
@@ -54,10 +55,18 @@ export async function submitReview(input: {
     const newCount = oldCount + 1;
     const newRating = Math.round(((oldRating * oldCount + rating) / newCount) * 10) / 10;
 
-    await supabase
-      .from("products")
-      .update({ rating: Math.min(newRating, 5), reviews: newCount })
-      .eq("id", input.productId);
+    // Products RLS public read-only hai — isliye rating/reviews update sirf
+    // service-role client se hoga (warna anon update silently fail ho jata hai).
+    if (isAdminReady()) {
+      const admin = createAdminClient();
+      const { error: updateError } = await admin
+        .from("products")
+        .update({ rating: Math.min(newRating, 5), reviews: newCount })
+        .eq("id", input.productId);
+      if (updateError) {
+        console.error("[review] product rating update failed:", updateError);
+      }
+    }
 
     revalidatePath(`/product/${input.productSlug || input.productId}`);
     revalidatePath("/", "layout");

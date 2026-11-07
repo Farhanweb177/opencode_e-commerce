@@ -265,7 +265,28 @@ export async function toggleStock(formData: FormData): Promise<void> {
   if (!id) return;
 
   const supabase = createAdminClient();
-  await supabase.from("products").update({ in_stock: !inStock }).eq("id", id);
+
+  // in_stock ko stock se consistent rakho (product form bhi stock se derive
+  // karta hai): out-of-stock = stock 0, in-stock = kam az kam 1 unit.
+  if (inStock) {
+    await supabase
+      .from("products")
+      .update({ in_stock: false, stock: 0 })
+      .eq("id", id);
+  } else {
+    const { data } = await supabase
+      .from("products")
+      .select("stock")
+      .eq("id", id)
+      .single();
+    await supabase
+      .from("products")
+      .update({
+        in_stock: true,
+        stock: Math.max(1, Number(data?.stock ?? 0)),
+      })
+      .eq("id", id);
+  }
 
   revalidatePath("/", "layout");
   revalidatePath("/admin/products");

@@ -3,7 +3,13 @@
 import { createClient, createServerAuthClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createCheckoutSession } from "@/lib/payment";
+import { MANUAL_PAYMENT_METHODS } from "@/lib/payment-methods";
 import type { CartItem, ValidatedCoupon } from "@/lib/types";
+
+const ALLOWED_PAYMENT_METHODS = new Set([
+  "Cash on Delivery",
+  ...MANUAL_PAYMENT_METHODS.map((m) => m.label),
+]);
 
 export type CheckoutForm = {
   name: string;
@@ -87,8 +93,14 @@ export async function placeOrder(
   if (!form.name || !form.phone || !form.address || !form.city) {
     return { ok: false, saved: false, error: "Delivery details incomplete hain." };
   }
+  if (!ALLOWED_PAYMENT_METHODS.has(form.payment)) {
+    return { ok: false, saved: false, error: "Payment method valid nahi hai." };
+  }
   if (!items.length) {
     return { ok: false, saved: false, error: "Cart khali hai." };
+  }
+  if (items.some((i) => !i.productId || !Number.isFinite(i.quantity) || i.quantity < 1)) {
+    return { ok: false, saved: false, error: "Cart items valid nahi hain." };
   }
 
   const orderNumber = generateOrderNumber();
@@ -138,18 +150,23 @@ export async function placeOrder(
       discount: Number(result.discount ?? 0),
     };
   } catch (error) {
-    // RPC se ergib error message (jaise "stock khatam") pars karo
+    // RPC se aaya error message (jaise "stock khatam") pars karo
     const message =
       typeof error === "object" && error !== null && "message" in error
         ? String((error as { message: unknown }).message)
         : "";
     console.error("[checkout] order save failed:", error);
+
+    const unreachable =
+      /fetch failed|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|network|timeout/i.test(
+        message
+      );
     return {
       ok: false,
       saved: false,
-      // PostgreSQL exception message clean rakho
-      error:
-        message && !message.includes("Supabase")
+      error: unreachable
+        ? "Database se connect nahi ho saka. Supabase URL/keys check karein."
+        : message && !message.includes("Supabase")
           ? message
           : "Order save nahi hua. Dobara koshish karein.",
     };

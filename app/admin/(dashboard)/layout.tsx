@@ -4,7 +4,6 @@ import { isAdminReady, isSupabaseConfigured } from "@/lib/supabase/config";
 import { signOut } from "../actions";
 import { AdminNav } from "./AdminNav";
 import { AdminOrdersNotifier } from "./AdminOrdersNotifier";
-import "./admin.css";
 
 export default async function AdminLayout({
   children,

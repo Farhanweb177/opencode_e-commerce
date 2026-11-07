@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function SearchPage({ searchParams }: PageProps) {
   const sp = (await searchParams) ?? {};
-  const q = sp.q ?? "";
+  const q = typeof sp.q === "string" ? sp.q : "";
   const matched = await searchProducts(q);
   const products = applyFilters(matched, sp);
 

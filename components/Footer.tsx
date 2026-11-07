@@ -87,8 +87,7 @@ export async function Footer() {
           <span>COD</span>
           <span>JazzCash</span>
           <span>Easypaisa</span>
-          <span>Visa</span>
-          <span>Mastercard</span>
+          <span>Bank Transfer</span>
         </div>
       </div>
     </footer>

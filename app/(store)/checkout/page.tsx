@@ -67,7 +67,7 @@ export default function CheckoutPage() {
         <p>Payment method: <strong>{form.payment}</strong></p>
         {orderDiscount > 0 && (
           <p className="coupon-applied-total">
-            🎉 Aapne Rs. {formatPrice(orderDiscount)} ki bachat ki!
+            🎉 Aapne {formatPrice(orderDiscount)} ki bachat ki!
           </p>
         )}
         <Link href="/track" className="btn btn-outline btn-lg">
@@ -106,24 +106,33 @@ export default function CheckoutPage() {
     const code = couponState.code.trim();
     if (!code) return;
     setCouponState((s) => ({ ...s, checking: true, error: null }));
-    const result = await validateCoupon(code, subtotal);
-    if (result.ok && result.coupon) {
+    try {
+      const result = await validateCoupon(code, subtotal);
+      if (result.ok && result.coupon) {
+        setCouponState((s) => ({
+          ...s,
+          coupon: result.coupon!,
+          discount: computeDiscount(result.coupon!, subtotal),
+          applied: true,
+          checking: false,
+          error: null,
+        }));
+      } else {
+        setCouponState((s) => ({
+          ...s,
+          coupon: null,
+          discount: 0,
+          applied: false,
+          checking: false,
+          error: result.error ?? "Coupon invalid hai.",
+        }));
+      }
+    } catch (error) {
+      console.error("[checkout] coupon request failed:", error);
       setCouponState((s) => ({
         ...s,
-        coupon: result.coupon!,
-        discount: computeDiscount(result.coupon!, subtotal),
-        applied: true,
         checking: false,
-        error: null,
-      }));
-    } else {
-      setCouponState((s) => ({
-        ...s,
-        coupon: null,
-        discount: 0,
-        applied: false,
-        checking: false,
-        error: result.error ?? "Coupon invalid hai.",
+        error: "Coupon check nahi hua. Dobara koshish karein.",
       }));
     }
   }
@@ -144,23 +153,29 @@ export default function CheckoutPage() {
     setPlacing(true);
     setError("");
 
-    const result = await placeOrder(
-      {
-        ...form,
-        coupon: couponState.coupon?.code ?? "",
-      },
-      items
-    );
+    try {
+      const result = await placeOrder(
+        {
+          ...form,
+          coupon: couponState.coupon?.code ?? "",
+        },
+        items
+      );
 
-    if (result.ok && result.orderNumber) {
-      setOrderId(result.orderNumber);
-      setOrderDiscount(result.discount ?? couponState.discount);
-      clearCart();
-      setPlaced(true);
-    } else {
-      setError(result.error ?? "Kuch ghalat ho gaya. Dobara koshish karein.");
+      if (result.ok && result.orderNumber) {
+        setOrderId(result.orderNumber);
+        setOrderDiscount(result.discount ?? couponState.discount);
+        clearCart();
+        setPlaced(true);
+      } else {
+        setError(result.error ?? "Kuch ghalat ho gaya. Dobara koshish karein.");
+      }
+    } catch (err) {
+      console.error("[checkout] place order request failed:", err);
+      setError("Server se connect nahi ho paya. Dobara koshish karein.");
+    } finally {
+      setPlacing(false);
     }
-    setPlacing(false);
   }
 
   const isValid = form.name && form.phone && form.address && form.city;

@@ -118,6 +118,8 @@ export async function searchProducts(query: string): Promise<Product[]> {
     return searchStaticProducts(query.trim());
   }
 
+  let dbFailed = false;
+
   // Professional mode: PostgreSQL full-text search (GIN index + websearch)
   try {
     const supabase = await createClient();
@@ -131,18 +133,27 @@ export async function searchProducts(query: string): Promise<Product[]> {
       return data.map(rowToProduct);
     }
   } catch (error) {
+    dbFailed = true;
     console.error("[db] full-text search failed, falling back:", error);
   }
 
   // Fallback: ilike (ya search_vector column nahi bana to)
+  // PostgREST filter syntax ko todne wale characters hata dete hain.
+  const normalized = query
+    .trim()
+    .toLowerCase()
+    .replace(/[%,()*"\\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!normalized) return [];
+
   try {
     const supabase = await createClient();
-    const normalized = query.trim().toLowerCase();
     const { data, error } = await supabase
       .from("products")
       .select("*")
       .or(
-        `name.ilike.*${normalized}*,description.ilike.*${normalized}*,category_slug.ilike.*${normalized}*`
+        `name.ilike.%${normalized}%,description.ilike.%${normalized}%,category_slug.ilike.%${normalized}%`
       )
       .order("created_at");
     if (error) throw error;
@@ -150,8 +161,12 @@ export async function searchProducts(query: string): Promise<Product[]> {
       return data.map(rowToProduct);
     }
   } catch (error) {
+    dbFailed = true;
     console.error("[db] fallback search failed:", error);
   }
+
+  // DB fail hui (offline) to static catalog par search karo
+  if (dbFailed) return searchStaticProducts(query);
 
   return [];
 }
@@ -166,8 +181,13 @@ function searchStaticProducts(query: string): Product[] {
   );
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function getReviews(productId: string): Promise<Review[]> {
   if (!isSupabaseConfigured()) return [];
+  // Static fallback products ke ids UUID nahi hote — seedha khali return karo.
+  if (!UUID_RE.test(productId)) return [];
   try {
     const supabase = await createClient();
     const { data, error } = await supabase

@@ -34,7 +34,9 @@ export function ProductFilters({
 }) {
   return (
     <form method="get" action={base} className="product-filters">
-      {params.q && <input type="hidden" name="q" value={params.q} />}
+      {!showSearch && params.q && (
+        <input type="hidden" name="q" value={params.q} />
+      )}
       {showSearch && (
         <div className="filter-field filter-search">
           <input

@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <div className="static-content">
         <h2>Hum kya data collect karte hain?</h2>
         <p>
-          - Order karte waqt: naam, phone number, address, city aur email
+          - Order karte waqt: naam, phone number, address aur city
           <br />- Account banate waqt: email aur password
           <br />- Checkout par: payment method (card number collect nahi karte)
         </p>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
         <h2>Contact</h2>
         <p>
           Privacy ke kisi sawal ke liye{" "}
-          <a href="mailto:support@allinone.store">support@allinone.store</a>{" "}
+          <a href="mailto:support@allinone.pk">support@allinone.pk</a>{" "}
           par email karein.
         </p>
       </div>

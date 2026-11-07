@@ -41,32 +41,37 @@ export default function AccountPage() {
 
   useEffect(() => {
     async function load() {
-      if (!isSupabaseConfigured()) {
+      try {
+        if (!isSupabaseConfigured()) return;
+        const supabase = createClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        setEmail(session.user.email ?? null);
+        const { data } = await supabase.rpc("get_my_orders");
+        setOrders((Array.isArray(data) ? data : []) as AccountOrder[]);
+      } catch (error) {
+        console.error("[account] load failed:", error);
+      } finally {
         setLoading(false);
-        return;
       }
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session?.user) {
-        setLoading(false);
-        return;
-      }
-      setEmail(session.user.email ?? null);
-      const { data } = await supabase.rpc("get_my_orders");
-      setOrders((Array.isArray(data) ? data : []) as AccountOrder[]);
-      setLoading(false);
     }
     load();
   }, []);
 
   async function handleSignOut() {
     setSigningOut(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("[account] sign out failed:", error);
+    } finally {
+      setSigningOut(false);
+    }
   }
 
   if (loading) {

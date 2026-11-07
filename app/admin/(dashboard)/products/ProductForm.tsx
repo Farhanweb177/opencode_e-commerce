@@ -64,6 +64,7 @@ export function ProductForm({
   function handleUrlChange(value: string) {
     setImageUrl(value);
     setFileChosen(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     if (filePreview) {
       URL.revokeObjectURL(filePreview);
       setFilePreview(null);
@@ -301,11 +302,11 @@ export function ProductForm({
               )}
             </div>
             <input
-              type="url"
+              type="text"
               name="imageUrl"
               value={imageUrl}
               onChange={(e) => handleUrlChange(e.target.value)}
-              placeholder="Ya photo ka URL yahan paste karein"
+              placeholder="Ya photo ka URL/path yahan paste karein"
             />
             {fileChosen ? (
               <p className="upload-status ok">

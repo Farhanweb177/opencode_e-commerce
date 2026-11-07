@@ -11,7 +11,7 @@ const FAQS = [
   },
   {
     q: "Payment ke konsay tareeqay hain?",
-    a: "Cash on Delivery (COD), JazzCash, Easypaisa aur Card. Online payment gateway aane wala hai.",
+    a: "Cash on Delivery (COD), JazzCash, Easypaisa aur Bank Transfer. Card/online payment gateway jald aa raha hai.",
   },
   {
     q: "Delivery kitne din mein hoti hai?",

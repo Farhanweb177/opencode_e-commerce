@@ -26,8 +26,8 @@ export default function ReturnsPage() {
         <p>
           - COD orders: refund bank account ya JazzCash/Easypaisa mein 3-5
           working days mein
-          <br />- Online payment: usi payment method par wapsi 5-7 working days
-          mein
+          <br />- JazzCash/Easypaisa/Bank Transfer: usi account mein wapsi 5-7
+          working days mein
         </p>
         <h2>Kya return nahi hota?</h2>
         <ul>

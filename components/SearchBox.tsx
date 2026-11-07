@@ -1,16 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 export function SearchBox() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const currentQuery = searchParams.get("q") ?? "";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const q = query.trim();
+    const q = String(new FormData(e.currentTarget as HTMLFormElement).get("q") ?? "").trim();
     router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
   }
 
@@ -30,10 +29,10 @@ export function SearchBox() {
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       <input
+        key={currentQuery}
         type="search"
         name="q"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        defaultValue={currentQuery}
         placeholder="Search products..."
         aria-label="Search products"
       />

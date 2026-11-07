@@ -77,6 +77,7 @@ drop policy if exists "Admin update orders"     on public.orders;
 drop policy if exists "Admin delete orders"     on public.orders;
 drop policy if exists "Admin manage coupons"    on public.coupons;
 drop policy if exists "Anon read orders for realtime" on public.orders;
+drop policy if exists "Anyone can place orders"      on public.orders;
 drop policy if exists "Admin upload product images"   on storage.objects;
 drop policy if exists "Admin update product images"   on storage.objects;
 drop policy if exists "Admin delete product images"   on storage.objects;
@@ -145,7 +146,9 @@ begin
     'created_at', o.created_at
   ) into result
   from public.orders o
-  where o.order_number = p_order_number and o.phone = p_phone
+  where upper(btrim(o.order_number)) = upper(btrim(p_order_number))
+    and regexp_replace(o.phone, '[^0-9]', '', 'g')
+      = regexp_replace(p_phone, '[^0-9]', '', 'g')
   limit 1;
 
   return coalesce(result, jsonb_build_object('error', 'not_found'));
@@ -320,6 +323,17 @@ grant execute on function public.validate_coupon to anon, authenticated;
 grant execute on function public.track_order      to anon, authenticated;
 grant execute on function public.get_my_orders    to authenticated;
 grant execute on function public.place_order      to anon, authenticated;
+
+-- ---------- Product images bucket ----------
+
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public read product images" on storage.objects;
+create policy "Public read product images"
+  on storage.objects for select
+  using (bucket_id = 'product-images');
 
 -- ---------- Seed coupons ----------
 

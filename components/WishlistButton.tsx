@@ -28,6 +28,8 @@ export function WishlistButton({
           emoji: product.emoji,
           gradient: product.gradient,
           imageUrl: product.imageUrl ?? null,
+          inStock: product.inStock,
+          stock: product.stock,
         })
       }
       className={`wishlist-btn ${active ? "active" : ""} ${

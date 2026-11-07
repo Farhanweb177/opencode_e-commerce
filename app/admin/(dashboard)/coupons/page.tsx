@@ -1,5 +1,6 @@
 import { getCoupons } from "@/lib/admin-queries";
 import { isAdminConfigured } from "@/lib/admin-auth";
+import { isExpired } from "@/lib/utils";
 import { DeleteButton } from "../DeleteButton";
 import {
   createCoupon,
@@ -12,12 +13,9 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminCouponsPage() {
   const coupons = await getCoupons();
-  const today = new Date().toISOString().slice(0, 10);
-
   const couponsWithState = coupons.map((coupon) => ({
     ...coupon,
-    expired:
-      coupon.expires_at !== null && coupon.expires_at < today,
+    expired: isExpired(coupon.expires_at),
     usedUp:
       coupon.max_uses !== null && coupon.used_count >= coupon.max_uses,
   }));
@@ -109,6 +107,7 @@ export default async function AdminCouponsPage() {
               >
                 <form action={updateCoupon} className="coupon-row-edit">
                   <input type="hidden" name="originalCode" value={coupon.code} />
+                  <input type="hidden" name="code" value={coupon.code} />
                   <span className="coupon-code-badge">
                     {coupon.code}
                     <small className={coupon.active ? "ok" : ""}>

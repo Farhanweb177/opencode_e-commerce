@@ -119,13 +119,12 @@ drop policy if exists "Public read products" on public.products;
 create policy "Public read products"
   on public.products for select using (true);
 
--- ORDERS: 
---  - anon/auth can INSERT (checkout)
+-- ORDERS:
+--  - NO direct anon INSERT — orders sirf place_order() SECURITY DEFINER RPC
+--    se bante hain (price/stock/coupon server-side validate hota hai).
 --  - NO anon SELECT — customer personal data exposed nahi hoga
 --  - admin reads/writes via service-role (RLS bypass)
 drop policy if exists "Anyone can place orders" on public.orders;
-create policy "Anyone can place orders"
-  on public.orders for insert to anon, authenticated with check (true);
 
 -- REVIEWS: public read + anyone insert (with rating validation)
 drop policy if exists "Public read reviews" on public.reviews;
@@ -202,7 +201,9 @@ begin
     'created_at', o.created_at
   ) into result
   from public.orders o
-  where o.order_number = p_order_number and o.phone = p_phone
+  where upper(btrim(o.order_number)) = upper(btrim(p_order_number))
+    and regexp_replace(o.phone, '[^0-9]', '', 'g')
+      = regexp_replace(p_phone, '[^0-9]', '', 'g')
   limit 1;
 
   return coalesce(result, jsonb_build_object('error', 'not_found'));
@@ -284,9 +285,15 @@ begin
     raise exception 'Delivery details incomplete hain.' using errcode = 'P0001';
   end if;
 
+  if p_items is null
+     or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) = 0 then
+    raise exception 'Cart khali hai.' using errcode = 'P0001';
+  end if;
+
   -- 1) Har item ke liye prices aur stock fetch karo, validate karo, decrement karo
   for v_item in select * from jsonb_array_elements(p_items) loop
-    select p.id, p.slug, p.name, p.emoji, p.price, p.stock
+    select p.id, p.slug, p.name, p.emoji, p.price, p.stock, p.in_stock
       into v_product
       from public.products p
       where p.id = (v_item->>'productId')::uuid;
@@ -298,6 +305,11 @@ begin
 
     if (v_item->>'quantity')::int <= 0 then
       raise exception 'Invalid quantity for %', v_product.name
+        using errcode = 'P0001';
+    end if;
+
+    if v_product.in_stock is not true then
+      raise exception '"%s" abhi available nahi hai', v_product.name
         using errcode = 'P0001';
     end if;
 

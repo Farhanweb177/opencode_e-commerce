@@ -19,6 +19,12 @@ describe("payment-methods", () => {
     expect(getManualPaymentMethod("nope")).toBeUndefined();
   });
 
+  it("looks up methods by checkout label (case-insensitive)", () => {
+    expect(getManualPaymentMethod("JazzCash")?.id).toBe("jazzcash");
+    expect(getManualPaymentMethod("easypaisa")?.id).toBe("easypaisa");
+    expect(getManualPaymentMethod("Bank Transfer")?.id).toBe("bank");
+  });
+
   it("has account details for every method", () => {
     for (const m of MANUAL_PAYMENT_METHODS) {
       expect(m.display).toBeTruthy();

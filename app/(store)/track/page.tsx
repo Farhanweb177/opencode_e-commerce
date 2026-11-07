@@ -30,14 +30,21 @@ export default function TrackPage() {
     e.preventDefault();
     setChecking(true);
     setError("");
-    const result = await trackOrder(orderNumber, phone);
-    if (result.ok && result.order) {
-      setOrder(result.order);
-    } else {
+    try {
+      const result = await trackOrder(orderNumber, phone);
+      if (result.ok && result.order) {
+        setOrder(result.order);
+      } else {
+        setOrder(null);
+        setError(result.error ?? "Order nahi mila.");
+      }
+    } catch (error) {
+      console.error("[track] request failed:", error);
       setOrder(null);
-      setError(result.error ?? "Order nahi mila.");
+      setError("Server se connect nahi ho paya. Dobara koshish karein.");
+    } finally {
+      setChecking(false);
     }
-    setChecking(false);
   }
 
   return (

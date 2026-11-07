@@ -21,6 +21,7 @@ export function AddToCartButton({
   const [quantity, setQuantity] = useState(1);
   const [browseQty, setBrowseQty] = useState(1);
   const [placing, setPlacing] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -41,31 +42,44 @@ export function AddToCartButton({
     e.preventDefault();
     if (!isValid || placing) return;
     setPlacing(true);
-    const result = await placeOrder(
-      { ...form, payment: "Cash on Delivery" },
-      [
-      {
-        productId: product.id,
-        slug: product.slug,
-        name: product.name,
-        category: product.category,
-        price: product.price,
-        emoji: product.emoji,
-        gradient: product.gradient,
-        imageUrl: product.imageUrl ?? null,
-        quantity,
-      },
-    ]);
-    if (result.ok && result.orderNumber) {
-      setPlacedOrderId(result.orderNumber);
-      removeItem(product.id);
+    setError("");
+    try {
+      const result = await placeOrder(
+        { ...form, payment: "Cash on Delivery" },
+        [
+          {
+            productId: product.id,
+            slug: product.slug,
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            emoji: product.emoji,
+            gradient: product.gradient,
+            imageUrl: product.imageUrl ?? null,
+            quantity,
+          },
+        ]
+      );
+      if (result.ok && result.orderNumber) {
+        setPlacedOrderId(result.orderNumber);
+        removeItem(product.id);
+      } else {
+        setError(
+          result.error ?? "Order save nahi hua. Dobara koshish karein."
+        );
+      }
+    } catch (err) {
+      console.error("[quick-order] request failed:", err);
+      setError("Server se connect nahi ho paya. Dobara koshish karein.");
+    } finally {
+      setPlacing(false);
     }
-    setPlacing(false);
   }
 
   function handleCancel() {
     setOpen(false);
     setQuantity(1);
+    setError("");
     setForm({ name: "", phone: "", address: "", city: "" });
   }
 
@@ -120,7 +134,10 @@ export function AddToCartButton({
           className={`btn ${large ? "btn-lg" : ""} btn-primary`}
           onClick={() => {
             addItem(product, browseQty);
-            if (large) setOpen(true);
+            if (large) {
+              setQuantity(browseQty);
+              setOpen(true);
+            }
           }}
         >
           {label}
@@ -231,6 +248,8 @@ export function AddToCartButton({
           delivery!
         </p>
       )}
+
+      {error && <p className="checkout-error">{error}</p>}
 
       <button
         type="submit"

@@ -27,25 +27,34 @@ export function ReviewForm({
     setPending(true);
     setMessage(null);
 
-    const result = await submitReview({
-      productId,
-      productSlug,
-      authorName: form.name,
-      rating: Number(form.rating),
-      comment: form.comment,
-    });
-
-    if (result.ok) {
-      setMessage({
-        ok: true,
-        text: "Shukriya! Aapka review publish ho gaya.",
+    try {
+      const result = await submitReview({
+        productId,
+        productSlug,
+        authorName: form.name,
+        rating: Number(form.rating),
+        comment: form.comment,
       });
-      setForm({ name: "", rating: 5, comment: "" });
-      router.refresh();
-    } else {
-      setMessage({ ok: false, text: result.error ?? "Review fail hua." });
+
+      if (result.ok) {
+        setMessage({
+          ok: true,
+          text: "Shukriya! Aapka review publish ho gaya.",
+        });
+        setForm({ name: "", rating: 5, comment: "" });
+        router.refresh();
+      } else {
+        setMessage({ ok: false, text: result.error ?? "Review fail hua." });
+      }
+    } catch (error) {
+      console.error("[review] request failed:", error);
+      setMessage({
+        ok: false,
+        text: "Server se connect nahi ho paya. Dobara koshish karein.",
+      });
+    } finally {
+      setPending(false);
     }
-    setPending(false);
   }
 
   return (

@@ -59,6 +59,8 @@ export default async function ProductPage({ params }: PageProps) {
   const lowStock =
     typeof product.stock === "number" && product.stock > 0 && product.stock <= 5;
 
+  const available = product.inStock && (product.stock ?? 1) > 0;
+
   return (
     <>
       <script
@@ -82,10 +84,9 @@ export default async function ProductPage({ params }: PageProps) {
               priceCurrency: "PKR",
               price: product.price,
               availability:
-                product.stock && product.stock > 0
+                product.inStock && (product.stock ?? 1) > 0
                   ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
-              url: `${SITE_URL}/product/${product.slug}`,
+                  : "https://schema.org/OutOfStock",              url: `${SITE_URL}/product/${product.slug}`,
             },
           }),
         }}
@@ -125,8 +126,8 @@ export default async function ProductPage({ params }: PageProps) {
           <p className="product-detail-desc">{product.description}</p>
 
           <div className="product-meta">
-            <span className={product.inStock ? "in-stock" : "out-of-stock"}>
-              {product.inStock ? "✓ In Stock" : "✗ Out of Stock"}
+            <span className={available ? "in-stock" : "out-of-stock"}>
+              {available ? "✓ In Stock" : "✗ Out of Stock"}
             </span>
             {lowStock && (
               <span className="low-stock-hint">
@@ -137,7 +138,7 @@ export default async function ProductPage({ params }: PageProps) {
             <span>🚚 Delivery in 2-4 days</span>
           </div>
 
-          {product.inStock ? (
+          {available ? (
             <div className="buy-actions buy-actions-lg">
               <AddToCartButton product={product} label="Add to Cart" large />
               <WishlistButton product={product} position="page" />

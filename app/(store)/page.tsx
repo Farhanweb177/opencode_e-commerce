@@ -79,9 +79,6 @@ export default async function Home() {
       <section className="container section" id="featured">
         <div className="section-head">
           <h2 className="section-title">Featured Deals</h2>
-          <Link href="/category/electronics" className="view-all">
-            View All →
-          </Link>
         </div>
         <div className="product-grid">
           {featured.map((product) => (
@@ -93,9 +90,6 @@ export default async function Home() {
       <section className="container section">
         <div className="section-head">
           <h2 className="section-title">New Arrivals</h2>
-          <Link href="/category/laptop-accessories" className="view-all">
-            View All →
-          </Link>
         </div>
         <div className="product-grid">
           {newProducts.map((product) => (

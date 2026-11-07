@@ -2280,6 +2280,12 @@ button {
   font-weight: 600;
 }
 
+.checkout-error {
+  color: var(--danger);
+  font-size: 13.5px;
+  margin-bottom: 10px;
+}
+
 .coupon-applied {
   display: flex;
   align-items: center;

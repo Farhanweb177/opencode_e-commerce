@@ -32,6 +32,11 @@ describe("session-crypto", () => {
     expect(await verifySessionToken(`v1.abc.${sig}`, SECRET)).toBe(false);
   });
 
+  it("rejects invalid base64 signatures without throwing", async () => {
+    expect(await verifySessionToken(`v1.${Date.now()}.!!!!`, SECRET)).toBe(false);
+    expect(await verifySessionToken("v1.123.%", SECRET)).toBe(false);
+  });
+
   it("rejects expired tokens", async () => {
     vi.useFakeTimers();
     const token = await createSessionToken(SECRET);

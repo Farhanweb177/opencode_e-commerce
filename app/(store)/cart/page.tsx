@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
-import { formatPrice } from "@/lib/utils";
+import { formatCategoryName, formatPrice } from "@/lib/utils";
 
 export default function CartPage() {
   const { items, subtotal, updateQuantity, removeItem, clearCart } = useCart();
@@ -47,7 +47,9 @@ export default function CartPage() {
                 <Link href={`/product/${item.slug}`} className="cart-item-name">
                   {item.name}
                 </Link>
-                <span className="product-category-label">{item.category}</span>
+                <span className="product-category-label">
+                  {formatCategoryName(item.category)}
+                </span>
                 <span className="cart-item-price">
                   {formatPrice(item.price)}
                 </span>

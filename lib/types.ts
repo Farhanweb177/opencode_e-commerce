@@ -38,7 +38,16 @@ export type CartItem = {
 
 export type ProductSnapshot = Pick<
   Product,
-  "id" | "slug" | "name" | "category" | "price" | "emoji" | "gradient" | "imageUrl"
+  | "id"
+  | "slug"
+  | "name"
+  | "category"
+  | "price"
+  | "emoji"
+  | "gradient"
+  | "imageUrl"
+  | "inStock"
+  | "stock"
 >;
 
 export type OrderStatus =

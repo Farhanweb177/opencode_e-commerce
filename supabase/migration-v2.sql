@@ -27,6 +27,10 @@ drop policy if exists "Admin manage coupons"      on public.coupons;
 
 drop policy if exists "Anon read orders for realtime" on public.orders;
 
+-- Orders direct insert band karein — orders sirf place_order() RPC se banenge
+-- (warna anon key se koi bhi fake/arbitrary total ka order insert kar sakta hai).
+drop policy if exists "Anyone can place orders" on public.orders;
+
 -- 3) Storage ki authenticated write policies hatayein
 --    Sirf public read + service-role admin (bypass) chahiye.
 
@@ -39,8 +43,17 @@ drop policy if exists "Admin delete product images"  on storage.objects;
 --    ghalat tha — koi bhi directly call karke stock khatam kar sakta tha.
 --    Ab place_order function yeh sab internally handle karta hai.
 
-revoke execute on function public.decrement_stock(uuid, integer) from anon, authenticated;
-revoke execute on function public.increment_coupon_usage(text)   from anon, authenticated;
+do $migration$
+begin
+  if to_regprocedure('public.decrement_stock(uuid, integer)') is not null then
+    execute 'revoke execute on function public.decrement_stock(uuid, integer) from anon, authenticated';
+  end if;
+  if to_regprocedure('public.increment_coupon_usage(text)') is not null then
+    execute 'revoke execute on function public.increment_coupon_usage(text) from anon, authenticated';
+  end if;
+end
+$migration$;
+
 drop function if exists public.decrement_stock(uuid, integer);
 drop function if exists public.increment_coupon_usage(text);
 
@@ -61,20 +74,39 @@ exception when duplicate_object then null;
 end $$;
 
 -- Full-text search vector
-alter table public.products add column if not exists search_vector tsvector;
+-- Note: fresh installs (schema.sql) me ye column GENERATED hai. Us case me
+-- manually assign karna allowed nahi, isliye column ki nature check karte hain.
+do $migration$
+declare
+  v_is_generated text;
+begin
+  select c.is_generated into v_is_generated
+  from information_schema.columns c
+  where c.table_schema = 'public'
+    and c.table_name = 'products'
+    and c.column_name = 'search_vector';
 
--- For existing rows — populate search_vector manually (trigger future mein set karega)
-update public.products set search_vector = to_tsvector('simple',
-  coalesce(name, '') || ' ' ||
-  coalesce(description, '') || ' ' ||
-  coalesce(category_slug, '') || ' ' ||
-  coalesce(tag, '')
-);
+  if v_is_generated is null then
+    alter table public.products add column search_vector tsvector;
+    v_is_generated := 'NEVER';
+  end if;
+
+  if v_is_generated = 'NEVER' then
+    update public.products set search_vector = to_tsvector('simple',
+      coalesce(name, '') || ' ' ||
+      coalesce(description, '') || ' ' ||
+      coalesce(category_slug, '') || ' ' ||
+      coalesce(tag, '')
+    );
+  end if;
+end
+$migration$;
 
 -- GIN index for full-text search
 create index if not exists products_search_idx on public.products using gin(search_vector);
 
 -- Trigger to keep search_vector updated on INSERT/UPDATE
+-- (generated column ke liye trigger ki zaroorat nahi — skip karo)
 create or replace function public.products_search_update() returns trigger
 language plpgsql as $$
 begin
@@ -88,10 +120,23 @@ begin
 end;
 $$;
 
-drop trigger if exists trg_products_search_update on public.products;
-create trigger trg_products_search_update
-  before insert or update on public.products
-  for each row execute function public.products_search_update();
+do $migration$
+declare
+  v_is_generated text;
+begin
+  select c.is_generated into v_is_generated
+  from information_schema.columns c
+  where c.table_schema = 'public'
+    and c.table_name = 'products'
+    and c.column_name = 'search_vector';
+
+  execute 'drop trigger if exists trg_products_search_update on public.products';
+
+  if v_is_generated = 'NEVER' then
+    execute 'create trigger trg_products_search_update before insert or update on public.products for each row execute function public.products_search_update()';
+  end if;
+end
+$migration$;
 
 -- ============================================================
 -- PHASE C: ATOMIC ORDER FUNCTION (place_order)
@@ -132,8 +177,14 @@ begin
     raise exception 'Delivery details incomplete hain.' using errcode = 'P0001';
   end if;
 
+  if p_items is null
+     or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) = 0 then
+    raise exception 'Cart khali hai.' using errcode = 'P0001';
+  end if;
+
   for v_item in select * from jsonb_array_elements(p_items) loop
-    select p.id, p.slug, p.name, p.emoji, p.price, p.stock
+    select p.id, p.slug, p.name, p.emoji, p.price, p.stock, p.in_stock
       into v_product
       from public.products p
       where p.id = (v_item->>'productId')::uuid;
@@ -145,6 +196,11 @@ begin
 
     if (v_item->>'quantity')::int <= 0 then
       raise exception 'Invalid quantity for %', v_product.name
+        using errcode = 'P0001';
+    end if;
+
+    if v_product.in_stock is not true then
+      raise exception '"%s" abhi available nahi hai', v_product.name
         using errcode = 'P0001';
     end if;
 
@@ -228,6 +284,89 @@ $$;
 -- Grant execute (anon checkout ke liye)
 revoke execute on function public.place_order from anon, authenticated;
 grant execute on function public.place_order to anon, authenticated;
+
+-- ============================================================
+-- PHASE C2: TRACKING + ACCOUNT + STORAGE (existing DBs ke liye)
+-- ============================================================
+
+-- Order tracking (normalized order number + phone, formatting ignore)
+create or replace function public.track_order(p_order_number text, p_phone text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare result jsonb;
+begin
+  select jsonb_build_object(
+    'order_number', o.order_number,
+    'customer_name', o.customer_name,
+    'city', o.city,
+    'status', o.status,
+    'payment_method', o.payment_method,
+    'subtotal', o.subtotal,
+    'shipping', o.shipping,
+    'discount', o.discount,
+    'total', o.total,
+    'items', o.items,
+    'created_at', o.created_at
+  ) into result
+  from public.orders o
+  where upper(btrim(o.order_number)) = upper(btrim(p_order_number))
+    and regexp_replace(o.phone, '[^0-9]', '', 'g')
+      = regexp_replace(p_phone, '[^0-9]', '', 'g')
+  limit 1;
+
+  return coalesce(result, jsonb_build_object('error', 'not_found'));
+end;
+$$;
+
+grant execute on function public.track_order to anon, authenticated;
+
+-- Logged-in customer ke apne orders (/account page)
+create or replace function public.get_my_orders()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare uid uuid; result jsonb;
+begin
+  uid := auth.uid();
+  if uid is null then
+    return jsonb_build_array();
+  end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'order_number', o.order_number,
+    'status',       o.status,
+    'total',        o.total,
+    'subtotal',     o.subtotal,
+    'shipping',     o.shipping,
+    'discount',     o.discount,
+    'payment_method', o.payment_method,
+    'items',        o.items,
+    'created_at',   o.created_at
+  ) order by o.created_at desc), '[]'::jsonb)
+  into result
+  from public.orders o
+  where o.user_id = uid;
+
+  return result;
+end;
+$$;
+
+grant execute on function public.get_my_orders to authenticated;
+
+-- Product images bucket (admin service-role upload karta hai)
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public read product images" on storage.objects;
+create policy "Public read product images"
+  on storage.objects for select
+  using (bucket_id = 'product-images');
 
 -- ============================================================
 -- PHASE D: SEED COUPONS

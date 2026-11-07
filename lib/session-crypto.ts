@@ -75,7 +75,12 @@ export async function verifySessionToken(
   if (Date.now() - issuedAtMs > SESSION_TTL_MS) return false;
 
   const expected = await sign(secret, `${SESSION_VERSION}.${issuedAt}.${SESSION_MESSAGE}`);
-  const a = fromBase64Url(sigB64);
-  const b = fromBase64Url(expected);
-  return constantTimeEqual(a, b);
+  try {
+    const a = fromBase64Url(sigB64);
+    const b = fromBase64Url(expected);
+    return constantTimeEqual(a, b);
+  } catch {
+    // Malformed base64 — forged/corrupt cookie ko 500 mat do, bas reject karo.
+    return false;
+  }
 }
